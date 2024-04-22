@@ -1,0 +1,15 @@
+.history {
+    display: grid;
+    row-gap: 5px;
+    width: 100px;
+    & .element {
+        padding: 5px;
+        text-align: center;
+        display: flex;
+        justify-items: center;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        color: black;
+    }
+}

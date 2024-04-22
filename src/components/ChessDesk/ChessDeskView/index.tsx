@@ -19,7 +19,7 @@ export default function ChessDeskView({
 }: IChessDeskViewProps) {
 
     return (
-        <div className="square">
+        <div className="desk">
             <div>Текущий ход: {currentPlayer}</div>
             {
                 Object.keys(deskInfo).map((el: string, lineIndex: number) => {

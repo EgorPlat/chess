@@ -1,7 +1,8 @@
-import { IDeskInfo } from "."
+import { IDeskInfo, IHistoryElement } from "."
 
 export interface IMainSlice {
-    deskInfo: IDeskInfo
+    deskInfo: IDeskInfo,
+    history: IHistoryElement[]
 };
 
 export interface IRootStore {

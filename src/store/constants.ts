@@ -1,4 +1,5 @@
 import { Figure, IDeskInfo } from "../interfaces";
+import { IMainSlice } from "../interfaces/slices";
 
 export const DEFAULT_DESK: IDeskInfo = {
     a: [
@@ -81,4 +82,9 @@ export const DEFAULT_DESK: IDeskInfo = {
         { color: "green", value: Figure.knight }, 
         { color: "green", value: Figure.rook }
     ],
+}
+
+export const INITIAL_MAIN_SLICE_STATE: IMainSlice = {
+    deskInfo: DEFAULT_DESK,
+    history: []
 }

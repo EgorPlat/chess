@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { IRootStore } from "../../interfaces/slices";
 import { IActiveFigure, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
-import { changeFigurePosition } from "../../store/slices/mainSlice";
+import { addRecordToHistory, changeFigurePosition } from "../../store/slices/mainSlice";
 import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen } from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
 
@@ -126,6 +126,7 @@ export default function ChessDesk() {
         }
         if (activeFigure && newPosition) {
             dispatch(changeFigurePosition({ activeFigure, newPosition }));
+            dispatch(addRecordToHistory({ figureColor: currentPlayer, activeFigure, newPosition }));
             setAllowedPositionForFigure([]);
             setActiveFigure(null);
             setNewPosition(null);

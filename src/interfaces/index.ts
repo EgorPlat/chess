@@ -3,7 +3,7 @@ export enum Figure { pawn, rook, bishop, queen, king, knight };
 export interface IDeskZone {
     color: string,
     value: Figure | null
-}
+};
 
 export interface IDeskInfo {
     a: IDeskZone[],
@@ -14,13 +14,23 @@ export interface IDeskInfo {
     f: IDeskZone[],
     g: IDeskZone[],
     h: IDeskZone[]
-}
+};
 
 export interface IFigurePosition {
     lineIndex: number,
     zoneIndex: number
-}
+};
+
 export interface IActiveFigure {
     figure: IDeskZone,
     position: IFigurePosition
-}
+};
+
+export type IFigureColor = "green" | "white";
+
+export interface IHistoryElement {
+    figureColor: IFigureColor,
+    previousPosition: IFigurePosition,
+    newPosition: IFigurePosition
+};
+
