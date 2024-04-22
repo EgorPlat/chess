@@ -1,0 +1,26 @@
+.square {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    justify-items: center;
+    & .line {
+        display: grid;
+        width: 560px;
+        height: 70px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        & .zone {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            & .zoneNumber {
+                font-size: 12px;
+                color: green;
+                font-weight: 800;
+            }
+            & .figure {
+                color: red;
+            }
+        }
+    }
+}
