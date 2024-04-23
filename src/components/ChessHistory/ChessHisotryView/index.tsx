@@ -12,7 +12,18 @@ export default function ChessHistoryView({
         {
             history.map(el => {
                 return (
-                    <div className="element" style={{ backgroundColor: el.figureColor }}>
+                    <div 
+                        className="element" 
+                        style={{ backgroundColor: el.figureColor }} 
+                        key={
+                            el.newPosition.lineIndex 
+                                + el.figureColor 
+                                + el.previousPosition.zoneIndex 
+                                + el.newPosition.zoneIndex
+                                + el.previousPosition.lineIndex
+                                + el.newPosition.lineIndex
+                        }
+                    >
                         {
                             `${Object.keys(DEFAULT_DESK)[el.previousPosition.lineIndex]}${el.previousPosition.zoneIndex + 1}`
                         } -

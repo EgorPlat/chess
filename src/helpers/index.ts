@@ -1,15 +1,17 @@
-import { IDeskInfo, IFigurePosition } from "../interfaces";
+import { Figure, IDeskInfo, IFigurePosition } from "../interfaces";
 
 export const isSquareZoneClear = (deskInfo: IDeskInfo, line: number, zone: number) => {
     if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
         return Object.values(deskInfo)[line][zone]?.value === null;
     }
 };
+
 export const isSquareZoneNotClear = (deskInfo: IDeskInfo, line: number, zone: number) => {
     if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
         return Object.values(deskInfo)[line][zone]?.value !== null;
     }
 };
+
 export const isSquareZoneFigureNotCurrentPlayer = (deskInfo: IDeskInfo, line: number, zone: number, currentPlayer: string) => {
     if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
         return Object.values(deskInfo)[line][zone]?.color !== currentPlayer;
@@ -56,9 +58,14 @@ export const detectAllowedZonesForPawn = (line: number, zone: number, currentPla
         }
         return allowedPositions;
     }
-}
+};
 
-export const detectAllowedZonesForRook = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+export const detectAllowedZonesForRook = (
+    line: number, 
+    zone: number,
+    currentPlayer: string, 
+    deskInfo: IDeskInfo
+) => {
     if (currentPlayer === 'white' || currentPlayer === 'green') {
         let allowedPositions: IFigurePosition[] = [];
         for (let i = line + 1; i <= 7; i++) {
@@ -110,7 +117,7 @@ export const detectAllowedZonesForRook = (line: number, zone: number, currentPla
         let allowedPositions: IFigurePosition[] = [];
         return allowedPositions;
     }
-}
+};
 
 export const detectAllowedZonesForBishop = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
     let allowedPositions: IFigurePosition[] = [];
@@ -178,11 +185,66 @@ export const detectAllowedZonesForBishop = (line: number, zone: number, currentP
         }
     }
     return allowedPositions;
-}
+};
+
+export const detectAllowedZonesForKing = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+    let allowedPositions: IFigurePosition[] = [];
+
+    const possiblePositions = [
+        { line: line + 1, zone: zone + 1 },
+        { line: line + 1, zone: zone - 1 },
+        { line: line - 1, zone: zone + 1 },
+        { line: line - 1, zone: zone - 1 },
+        { line: line, zone: zone + 1 },
+        { line: line, zone: zone - 1 },
+        { line: line + 1, zone: zone },
+        { line: line - 1, zone: zone }
+    ];
+    possiblePositions.map(position => {
+        if (isSquareZoneClear(deskInfo, position.line, position.zone)) {
+            allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
+        } else {
+            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer)) {
+                allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
+            }
+        }
+    });
+    return allowedPositions;
+};
+
+export const detectAllowedZonesForKnight = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+    let allowedPositions: IFigurePosition[] = [];
+
+    const possiblePositions = [
+        { line: line + 2, zone: zone + 1 },
+        { line: line + 2, zone: zone - 1 },
+        { line: line - 2, zone: zone - 1 },
+        { line: line - 2, zone: zone + 1 },
+        { line: line - 1, zone: zone + 2 },
+        { line: line - 1, zone: zone - 2 },
+        { line: line + 1, zone: zone - 2 },
+        { line: line + 1, zone: zone + 2 },
+    ];
+    possiblePositions.map(position => {
+        if (isSquareZoneClear(deskInfo, position.line, position.zone)) {
+            allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
+        } else {
+            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer)) {
+                allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
+            }
+        }
+    });
+    return allowedPositions;
+};
 
 export const detectAllowedZonesForQueen = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
     return [
         ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo),
         ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo)
     ];
+};
+
+export const checkingThreatForKingInPosition = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+    const figure: Figure | null = Object.values(deskInfo)[line][zone]?.value;
+    
 }

@@ -1,8 +1,11 @@
 .history {
     display: grid;
     row-gap: 5px;
-    width: 100px;
+    width: 105px;
+    max-height: 580px;
+    overflow-y: scroll;
     & .element {
+        width: 90px;
         padding: 5px;
         text-align: center;
         display: flex;

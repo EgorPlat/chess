@@ -3,7 +3,7 @@ import { IRootStore } from "../../interfaces/slices";
 import { IActiveFigure, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
 import { addRecordToHistory, changeFigurePosition } from "../../store/slices/mainSlice";
-import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen } from "../../helpers";
+import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen, detectAllowedZonesForKing, detectAllowedZonesForKnight } from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
 
 export default function ChessDesk() {
@@ -59,6 +59,26 @@ export default function ChessDesk() {
         if (activeFigure?.figure.value === 3) {
             setAllowedPositionForFigure(
                 detectAllowedZonesForQueen(
+                    activeFigure.position.lineIndex, 
+                    activeFigure.position.zoneIndex,
+                    currentPlayer,
+                    deskInfo
+                )
+            )
+        }
+        if (activeFigure?.figure.value === 4) {
+            setAllowedPositionForFigure(
+                detectAllowedZonesForKing(
+                    activeFigure.position.lineIndex, 
+                    activeFigure.position.zoneIndex,
+                    currentPlayer,
+                    deskInfo
+                )
+            )
+        }
+        if (activeFigure?.figure.value === 5) {
+            setAllowedPositionForFigure(
+                detectAllowedZonesForKnight(
                     activeFigure.position.lineIndex, 
                     activeFigure.position.zoneIndex,
                     currentPlayer,
