@@ -5,6 +5,7 @@ import './index.scss';
 interface IChessDeskViewProps {
     currentPlayer: string,
     deskInfo: IDeskInfo,
+    currentCheck: string | null,
     handleDetectColor: (lineIndex: number, zoneIndex: number) => string,
     handleSetNewPosition: (lineIndex: number, zoneIndex: number) => void,
     handleClickFigure: (figure: IDeskZone, lineIndex: number, zoneIndex: number) => void
@@ -15,12 +16,14 @@ export default function ChessDeskView({
     deskInfo,
     handleDetectColor,
     handleSetNewPosition,
-    handleClickFigure
+    handleClickFigure,
+    currentCheck
 }: IChessDeskViewProps) {
 
     return (
         <div className="desk">
             <div>Текущий ход: {currentPlayer}</div>
+            <div>Текущий шах объявлен к: {currentCheck}</div>
             {
                 Object.keys(deskInfo).map((el: string, lineIndex: number) => {
                     return (

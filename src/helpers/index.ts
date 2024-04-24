@@ -1,4 +1,4 @@
-import { Figure, IDeskInfo, IFigurePosition } from "../interfaces";
+import { Figure, IDeskInfo, IDeskZone, IFigurePosition } from "../interfaces";
 
 export const isSquareZoneClear = (deskInfo: IDeskInfo, line: number, zone: number) => {
     if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
@@ -18,7 +18,33 @@ export const isSquareZoneFigureNotCurrentPlayer = (deskInfo: IDeskInfo, line: nu
     }
 };
 
-export const detectAllowedZonesForPawn = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+
+export const isSquareZoneFigureKing = (deskInfo: IDeskInfo, line: number, zone: number, currentPlayer: string) => {
+    const figure: IDeskZone = Object.values(deskInfo)[line][zone];
+    return figure.color === currentPlayer && figure?.value === Figure.king;
+};
+
+export const isFigureAreRookOrQueen = (deskZone: IDeskZone) => {
+    return deskZone.value === Figure.rook || deskZone.value === Figure.queen;
+};
+
+export const isFigureAreQueenOrBishop = (deskZone: IDeskZone) => {
+    return deskZone.value === Figure.bishop || deskZone.value === Figure.queen;
+};
+
+export const getFigureInSquareZone = (deskInfo: IDeskInfo, line: number, zone: number) => {
+    if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
+        return Object.values(deskInfo)[line][zone];
+    }
+};
+
+export const detectAllowedZonesForPawn = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
+) => {
     if (currentPlayer === 'white') {
         let allowedPositions: IFigurePosition[] = [];
         const allowedPositionZone = Object.values(deskInfo)[line + 1][zone];
@@ -64,7 +90,8 @@ export const detectAllowedZonesForRook = (
     line: number, 
     zone: number,
     currentPlayer: string, 
-    deskInfo: IDeskInfo
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
 ) => {
     if (currentPlayer === 'white' || currentPlayer === 'green') {
         let allowedPositions: IFigurePosition[] = [];
@@ -119,7 +146,13 @@ export const detectAllowedZonesForRook = (
     }
 };
 
-export const detectAllowedZonesForBishop = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+export const detectAllowedZonesForBishop = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
+) => {
     let allowedPositions: IFigurePosition[] = [];
     // для белых и черных одинаковая диагональ
     for (let i = 1; i < 7; i++) {
@@ -187,7 +220,13 @@ export const detectAllowedZonesForBishop = (line: number, zone: number, currentP
     return allowedPositions;
 };
 
-export const detectAllowedZonesForKing = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+export const detectAllowedZonesForKing = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
+) => {
     let allowedPositions: IFigurePosition[] = [];
 
     const possiblePositions = [
@@ -212,7 +251,13 @@ export const detectAllowedZonesForKing = (line: number, zone: number, currentPla
     return allowedPositions;
 };
 
-export const detectAllowedZonesForKnight = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+export const detectAllowedZonesForKnight = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
+) => {
     let allowedPositions: IFigurePosition[] = [];
 
     const possiblePositions = [
@@ -237,14 +282,166 @@ export const detectAllowedZonesForKnight = (line: number, zone: number, currentP
     return allowedPositions;
 };
 
-export const detectAllowedZonesForQueen = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+export const detectAllowedZonesForQueen = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo,
+    currentCheck: string | null
+) => {
     return [
-        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo),
-        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo)
+        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck),
+        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo, currentCheck)
     ];
 };
 
-export const checkingThreatForKingInPosition = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
-    const figure: Figure | null = Object.values(deskInfo)[line][zone]?.value;
-    
+export const findKingOnTheDesk = (color: string, deskInfo: IDeskInfo) => {
+    let findedPositionKing = { line: 0, zone: 0 };
+    const deskLines = Object.values(deskInfo);
+    for (let i = 0; i < deskLines.length; i++) {
+        for (let j = 0; j < deskLines[i].length; j++) {
+            if (isSquareZoneFigureKing(deskInfo, i, j, color)) {
+                findedPositionKing = {
+                    line: i,
+                    zone: j
+                }
+                break;
+            }
+        }
+    }
+    return findedPositionKing;
+};
+
+export const checkingThreatForKingInPosition = (
+    line: number, 
+    zone: number, 
+    currentPlayer: string, 
+    deskInfo: IDeskInfo
+) => {
+    let isCheckExist: boolean = false;
+
+    // проверка шахов по вертикалям и горизонатлям
+    for (let i = line + 1; i < 8; i++) {
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, i, zone);
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreRookOrQueen(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let k = line - 1; k >= 0; k--) {
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, k, zone);
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreRookOrQueen(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let j = zone + 1; j < 8; j++) {
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, j);
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreRookOrQueen(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let h = zone - 1; h >= 0; h--) {
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, h);
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreRookOrQueen(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    // проверка шахов по диагоналям
+    for (let y = 1; y < 7; y++) {
+        let newLine = line + y;
+        let newZone = zone + y;
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, newLine, newZone);
+        if (!figure) break;
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreQueenOrBishop(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let d = 1; d < 7; d++) {
+        let newLine = line - d;
+        let newZone = zone - d;
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, newLine, newZone);
+        if (!figure) break;
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreQueenOrBishop(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let c = 1; c < 7; c++) {
+        let newLine = line + c;
+        let newZone = zone - c;
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, newLine, newZone);
+        if (!figure) break;
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreQueenOrBishop(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+    for (let g = 1; g < 7; g++) {
+        let newLine = line - g;
+        let newZone = zone + g;
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, newLine, newZone);
+        if (!figure) break;
+        if (figure.color === currentPlayer) break;
+        if (isFigureAreQueenOrBishop(figure)) {
+            isCheckExist = true;
+        }
+        if (figure.color !== currentPlayer && figure.value !== null) break;
+    }
+
+    // проверка шахов по траектории коней
+    const possiblePositions = [
+        { line: line + 2, zone: zone + 1 },
+        { line: line + 2, zone: zone - 1 },
+        { line: line - 2, zone: zone - 1 },
+        { line: line - 2, zone: zone + 1 },
+        { line: line - 1, zone: zone + 2 },
+        { line: line - 1, zone: zone - 2 },
+        { line: line + 1, zone: zone - 2 },
+        { line: line + 1, zone: zone + 2 },
+    ];
+    possiblePositions.map(position => {
+        const figure: IDeskZone = getFigureInSquareZone(deskInfo, position.line, position.zone);
+        if (!figure) return;
+        if (figure.color === currentPlayer) return;
+        if (figure.value === Figure.knight) {
+            isCheckExist = true;
+        }
+    });
+
+    // проверка пешечных шахов
+    let firstFigure: IDeskZone;
+    let secondFigure: IDeskZone
+    if (currentPlayer === 'green') {
+        firstFigure = getFigureInSquareZone(deskInfo, line - 1, zone + 1);
+        secondFigure = getFigureInSquareZone(deskInfo, line - 1, zone - 1);
+    } else {
+        firstFigure = getFigureInSquareZone(deskInfo, line + 1, zone + 1);
+        secondFigure = getFigureInSquareZone(deskInfo, line + 1, zone - 1);
+    }
+    if (firstFigure) {
+        if (firstFigure.color !== currentPlayer) {
+            if (firstFigure.value === Figure.pawn) {
+                isCheckExist = true;
+            }
+        };
+    }
+    if (secondFigure) {
+        if (firstFigure.color !== currentPlayer) {
+            if (firstFigure.value === Figure.pawn) {
+                isCheckExist = true;
+            }
+        };
+    }
+    return isCheckExist;
 }

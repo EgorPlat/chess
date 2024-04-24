@@ -10,7 +10,8 @@ const mainSlice = createSlice({
         const activeFigure: IActiveFigure = action.payload.activeFigure;
         const newPosition: IFigurePosition = action.payload.newPosition;
         
-        Object.values(state.deskInfo)[activeFigure.position.lineIndex][activeFigure.position.zoneIndex] = { color: "", value: null };
+        Object.values(state.deskInfo)[activeFigure.position.lineIndex][activeFigure.position.zoneIndex] 
+          = { color: "", value: null, isBlocked: false };
         Object.values(state.deskInfo)[newPosition.lineIndex][newPosition.zoneIndex] = activeFigure.figure;
       },
       addRecordToHistory(state, action) {
@@ -23,9 +24,12 @@ const mainSlice = createSlice({
           previousPosition: activeFigure.position,
           newPosition
         });
+      },
+      setCheckForPlayer(state, action) {
+        state.currentCheck = action.payload.color;
       }
     }
   })
 
-export const { changeFigurePosition, addRecordToHistory } = mainSlice.actions;
+export const { changeFigurePosition, addRecordToHistory, setCheckForPlayer } = mainSlice.actions;
 export default mainSlice.reducer;  

@@ -2,7 +2,8 @@ import { IDeskInfo, IHistoryElement } from "."
 
 export interface IMainSlice {
     deskInfo: IDeskInfo,
-    history: IHistoryElement[]
+    history: IHistoryElement[],
+    currentCheck: string | null
 };
 
 export interface IRootStore {

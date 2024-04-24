@@ -2,13 +2,14 @@ import { useDispatch, useSelector } from "react-redux"
 import { IRootStore } from "../../interfaces/slices";
 import { IActiveFigure, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
-import { addRecordToHistory, changeFigurePosition } from "../../store/slices/mainSlice";
-import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen, detectAllowedZonesForKing, detectAllowedZonesForKnight } from "../../helpers";
+import { addRecordToHistory, changeFigurePosition, setCheckForPlayer } from "../../store/slices/mainSlice";
+import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen, detectAllowedZonesForKing, detectAllowedZonesForKnight, findKingOnTheDesk, checkingThreatForKingInPosition } from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
 
 export default function ChessDesk() {
 
     const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.main.deskInfo);
+    const currentCheck: string | null = useSelector((store: IRootStore) => store.main.currentCheck);
     const [activeFigure, setActiveFigure] = useState<IActiveFigure | null>(null);
     const [newPosition, setNewPosition] = useState<IFigurePosition | null>(null);
     const [currentPlayer, setCurentPlayer] = useState<string>('white');
@@ -26,64 +27,39 @@ export default function ChessDesk() {
     };
 
     const handleDetectAllowedPositionsForFigure = () => {
-        if (activeFigure?.figure.value === 0) {
+        if (!activeFigure) return;
+        const props = {
+            line: activeFigure.position.lineIndex, 
+            zone: activeFigure.position.zoneIndex,
+        }
+        if (activeFigure.figure.value === 0) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForPawn(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForPawn(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
-        if (activeFigure?.figure.value === 1) {
+        if (activeFigure.figure.value === 1) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForRook(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForRook(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
-        if (activeFigure?.figure.value === 2) {
+        if (activeFigure.figure.value === 2) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForBishop(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForBishop(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
-        if (activeFigure?.figure.value === 3) {
+        if (activeFigure.figure.value === 3) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForQueen(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForQueen(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
-        if (activeFigure?.figure.value === 4) {
+        if (activeFigure.figure.value === 4) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKing(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForKing(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
-        if (activeFigure?.figure.value === 5) {
+        if (activeFigure.figure.value === 5) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKnight(
-                    activeFigure.position.lineIndex, 
-                    activeFigure.position.zoneIndex,
-                    currentPlayer,
-                    deskInfo
-                )
+                detectAllowedZonesForKnight(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
             )
         }
     };
@@ -154,6 +130,16 @@ export default function ChessDesk() {
         }
     }, [activeFigure, newPosition]);
 
+    useEffect(() => {
+        const currentKing = findKingOnTheDesk(currentPlayer, deskInfo);
+        const isCheck = checkingThreatForKingInPosition(currentKing.line, currentKing.zone, currentPlayer, deskInfo);
+        if (isCheck) {
+            dispatch(setCheckForPlayer({ color: currentPlayer }));
+        } else {
+            dispatch(setCheckForPlayer({ color: null }));
+        }
+    }, [currentPlayer]);
+
     return (
         <ChessDeskView 
             handleDetectColor={handleDetectColor}
@@ -161,6 +147,7 @@ export default function ChessDesk() {
             handleSetNewPosition={handleSetNewPosition}
             deskInfo={deskInfo}
             currentPlayer={currentPlayer}
+            currentCheck={currentCheck}
         />
     )
 }

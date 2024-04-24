@@ -2,7 +2,8 @@ export enum Figure { pawn, rook, bishop, queen, king, knight };
 
 export interface IDeskZone {
     color: string,
-    value: Figure | null
+    value: Figure | null,
+    isBlocked: boolean
 };
 
 export interface IDeskInfo {
