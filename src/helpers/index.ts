@@ -38,28 +38,68 @@ export const getFigureInSquareZone = (deskInfo: IDeskInfo, line: number, zone: n
     }
 };
 
+export const checkNewFigurePositionCanSaveKingFromCheck = (
+    checkPositions: IFigurePosition[],
+    lineIndex: number,
+    zoneIndex: number
+) => {
+    let isSave = false;
+    checkPositions.map(el => {
+        if (el.lineIndex === lineIndex && zoneIndex === el.zoneIndex) {
+            isSave = true;
+        }
+    });
+    if (checkPositions.length === 0) return true;
+    return isSave;
+};
+
+export const checkIsKingCanMoveToSquare = (
+    deskInfo: IDeskInfo,
+    checkPositions: IFigurePosition[],
+    lineIndex: number,
+    zoneIndex: number
+) => {
+    let isMove = true;
+    checkPositions.map(el => {
+        if (el.lineIndex === lineIndex && zoneIndex === el.zoneIndex) {
+            if (Object.values(deskInfo)[lineIndex][zoneIndex].value !== null) {
+                isMove = true;
+            } else {
+                isMove = false;
+            }
+        }
+    });
+    return isMove;
+};
+
 export const detectAllowedZonesForPawn = (
     line: number, 
     zone: number, 
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     if (currentPlayer === 'white') {
         let allowedPositions: IFigurePosition[] = [];
-        const allowedPositionZone = Object.values(deskInfo)[line + 1][zone];
-        if (allowedPositionZone.value === null) {
+        const allowedPositionZone = Object.values(deskInfo)[line + 1][zone]; 
+        if (
+            allowedPositionZone.value === null &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone }];
         }
         if (
             isSquareZoneNotClear(deskInfo, line + 1, zone + 1) &&
-            isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone + 1, currentPlayer)
+            isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone + 1, currentPlayer) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone + 1)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
         }
         if (
             isSquareZoneNotClear(deskInfo, line + 1, zone - 1) &&
-            isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone - 1, currentPlayer)
+            isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone - 1, currentPlayer) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone - 1)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
         }
@@ -67,18 +107,23 @@ export const detectAllowedZonesForPawn = (
     } else {
         let allowedPositions: IFigurePosition[] = [];
         const allowedPositionZone = Object.values(deskInfo)[line - 1][zone];
-        if (allowedPositionZone.value === null) {
+        if (
+            allowedPositionZone.value === null && 
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone }];
         }
         if ( 
             isSquareZoneNotClear(deskInfo, line - 1, zone - 1) &&
-            isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone - 1, currentPlayer)
+            isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone - 1, currentPlayer) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone - 1)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
         }
         if ( 
             isSquareZoneNotClear(deskInfo, line - 1, zone + 1) &&
-            isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone + 1, currentPlayer)
+            isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone + 1, currentPlayer) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone + 1)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
         }
@@ -91,15 +136,22 @@ export const detectAllowedZonesForRook = (
     zone: number,
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     if (currentPlayer === 'white' || currentPlayer === 'green') {
         let allowedPositions: IFigurePosition[] = [];
         for (let i = line + 1; i <= 7; i++) {
-            if (isSquareZoneClear(deskInfo, i, zone)) {
+            if (
+                isSquareZoneClear(deskInfo, i, zone) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: i, zoneIndex: zone }];
             } else {
-                if (isSquareZoneFigureNotCurrentPlayer(deskInfo, i, zone, currentPlayer)) {
+                if (
+                    isSquareZoneFigureNotCurrentPlayer(deskInfo, i, zone, currentPlayer) &&
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone)
+                ) {
                     allowedPositions = [...allowedPositions, { lineIndex: i, zoneIndex: zone }];
                     break;
                 }
@@ -107,10 +159,16 @@ export const detectAllowedZonesForRook = (
             }
         }
         for (let k = line - 1; k >= 0; k--) {
-            if (isSquareZoneClear(deskInfo, k, zone)) {
+            if (
+                isSquareZoneClear(deskInfo, k, zone) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: k, zoneIndex: zone }];
             } else {
-                if (isSquareZoneFigureNotCurrentPlayer(deskInfo, k, zone, currentPlayer)) {
+                if (
+                    isSquareZoneFigureNotCurrentPlayer(deskInfo, k, zone, currentPlayer) &&
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone)
+                ) {
                     allowedPositions = [...allowedPositions, { lineIndex: k, zoneIndex: zone }];
                     break;
                 }
@@ -118,10 +176,16 @@ export const detectAllowedZonesForRook = (
             }
         } 
         for (let j = zone - 1; j >= 0; j--) {
-            if (isSquareZoneClear(deskInfo, line, j)) {
+            if (
+                isSquareZoneClear(deskInfo, line, j) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: j }];
             } else {
-                if (isSquareZoneFigureNotCurrentPlayer(deskInfo, line, j, currentPlayer)) {
+                if (
+                    isSquareZoneFigureNotCurrentPlayer(deskInfo, line, j, currentPlayer) &&
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j)
+                ) {
                     allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: j }];
                     break;
                 }
@@ -129,10 +193,16 @@ export const detectAllowedZonesForRook = (
             }
         }
         for (let l = zone + 1; l <= 7; l++) {
-            if (isSquareZoneClear(deskInfo, line, l)) {
+            if (
+                isSquareZoneClear(deskInfo, line, l) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: l }];
             } else {
-                if (isSquareZoneFigureNotCurrentPlayer(deskInfo, line, l, currentPlayer)) {
+                if (
+                    isSquareZoneFigureNotCurrentPlayer(deskInfo, line, l, currentPlayer) &&
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l)
+                ) {
                     allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: l }];
                     break;
                 }
@@ -151,17 +221,24 @@ export const detectAllowedZonesForBishop = (
     zone: number, 
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
     // для белых и черных одинаковая диагональ
     for (let i = 1; i < 7; i++) {
         let newLine = line + i;
         let newZone = zone + i;
-        if (isSquareZoneClear(deskInfo, newLine, newZone)) {
+        if (
+            isSquareZoneClear(deskInfo, newLine, newZone) && 
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 break;
             }
@@ -175,10 +252,16 @@ export const detectAllowedZonesForBishop = (
         if (newLine < 0 || newZone < 0) {
             break;
         }
-        if (isSquareZoneClear(deskInfo, newLine, newZone)) {
+        if (
+            isSquareZoneClear(deskInfo, newLine, newZone) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 break;
             }
@@ -191,10 +274,16 @@ export const detectAllowedZonesForBishop = (
         if (newZone < 0) {
             break;
         }
-        if (isSquareZoneClear(deskInfo, newLine, newZone)) {
+        if (
+            isSquareZoneClear(deskInfo, newLine, newZone) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 break;
             }
@@ -207,10 +296,16 @@ export const detectAllowedZonesForBishop = (
         if (newLine < 0) {
             break;
         }
-        if (isSquareZoneClear(deskInfo, newLine, newZone)) {
+        if (
+            isSquareZoneClear(deskInfo, newLine, newZone) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 break;
             }
@@ -225,7 +320,8 @@ export const detectAllowedZonesForKing = (
     zone: number, 
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -240,10 +336,16 @@ export const detectAllowedZonesForKing = (
         { line: line - 1, zone: zone }
     ];
     possiblePositions.map(position => {
-        if (isSquareZoneClear(deskInfo, position.line, position.zone)) {
+        if (
+            isSquareZoneClear(deskInfo, position.line, position.zone) &&
+            checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer) &&
+                checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
             }
         }
@@ -256,7 +358,8 @@ export const detectAllowedZonesForKnight = (
     zone: number, 
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -271,10 +374,16 @@ export const detectAllowedZonesForKnight = (
         { line: line + 1, zone: zone + 2 },
     ];
     possiblePositions.map(position => {
-        if (isSquareZoneClear(deskInfo, position.line, position.zone)) {
+        if (
+            isSquareZoneClear(deskInfo, position.line, position.zone) &&
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone)
+        ) {
             allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
         } else {
-            if (isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer)) {
+            if (
+                isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer) &&
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone)
+            ) {
                 allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
             }
         }
@@ -287,11 +396,12 @@ export const detectAllowedZonesForQueen = (
     zone: number, 
     currentPlayer: string, 
     deskInfo: IDeskInfo,
-    currentCheck: string | null
+    currentCheck: string | null,
+    checkPositions: IFigurePosition[]
 ) => {
     return [
-        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck),
-        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo, currentCheck)
+        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions),
+        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions)
     ];
 };
 
@@ -318,14 +428,14 @@ export const checkingThreatForKingInPosition = (
     currentPlayer: string, 
     deskInfo: IDeskInfo
 ) => {
-    let isCheckExist: boolean = false;
+    let checkPositions: IFigurePosition[] = [];
 
     // проверка шахов по вертикалям и горизонатлям
     for (let i = line + 1; i < 8; i++) {
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, i, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -333,7 +443,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, k, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -341,7 +451,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, j);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone + 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -349,7 +459,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, h);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone - 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -361,7 +471,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -372,7 +482,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -383,7 +493,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -394,7 +504,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -415,7 +525,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) return;
         if (figure.color === currentPlayer) return;
         if (figure.value === Figure.knight) {
-            isCheckExist = true;
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone }];
         }
     });
 
@@ -432,16 +542,24 @@ export const checkingThreatForKingInPosition = (
     if (firstFigure) {
         if (firstFigure.color !== currentPlayer) {
             if (firstFigure.value === Figure.pawn) {
-                isCheckExist = true;
+                if (currentPlayer === 'green') {
+                    checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
+                } else {
+                    checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
+                }
             }
         };
     }
     if (secondFigure) {
         if (firstFigure.color !== currentPlayer) {
             if (firstFigure.value === Figure.pawn) {
-                isCheckExist = true;
+                if (currentPlayer === 'green') {
+                    checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
+                } else {
+                    checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
+                }
             }
         };
     }
-    return isCheckExist;
+    return checkPositions;
 }

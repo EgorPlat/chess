@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { IRootStore } from "../../interfaces/slices";
 import { IActiveFigure, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
-import { addRecordToHistory, changeFigurePosition, setCheckForPlayer } from "../../store/slices/mainSlice";
+import { addRecordToHistory, changeFigurePosition, setCheckForPlayer, setPositionsOfCurrentCheck } from "../../store/slices/mainSlice";
 import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen, detectAllowedZonesForKing, detectAllowedZonesForKnight, findKingOnTheDesk, checkingThreatForKingInPosition } from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
 
@@ -10,6 +10,7 @@ export default function ChessDesk() {
 
     const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.main.deskInfo);
     const currentCheck: string | null = useSelector((store: IRootStore) => store.main.currentCheck);
+    const positionsOfCurrentCheck: IFigurePosition[] = useSelector((store: IRootStore) => store.main.positionsOfCurrentCheck);
     const [activeFigure, setActiveFigure] = useState<IActiveFigure | null>(null);
     const [newPosition, setNewPosition] = useState<IFigurePosition | null>(null);
     const [currentPlayer, setCurentPlayer] = useState<string>('white');
@@ -34,32 +35,32 @@ export default function ChessDesk() {
         }
         if (activeFigure.figure.value === 0) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForPawn(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForPawn(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
         if (activeFigure.figure.value === 1) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForRook(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForRook(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
         if (activeFigure.figure.value === 2) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForBishop(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForBishop(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
         if (activeFigure.figure.value === 3) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForQueen(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForQueen(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
         if (activeFigure.figure.value === 4) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKing(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForKing(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
         if (activeFigure.figure.value === 5) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKnight(props.line, props.zone, currentPlayer, deskInfo, currentCheck)
+                detectAllowedZonesForKnight(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
             )
         }
     };
@@ -132,11 +133,13 @@ export default function ChessDesk() {
 
     useEffect(() => {
         const currentKing = findKingOnTheDesk(currentPlayer, deskInfo);
-        const isCheck = checkingThreatForKingInPosition(currentKing.line, currentKing.zone, currentPlayer, deskInfo);
-        if (isCheck) {
+        const checksPositions = checkingThreatForKingInPosition(currentKing.line, currentKing.zone, currentPlayer, deskInfo);
+        if (checksPositions.length !== 0) {
             dispatch(setCheckForPlayer({ color: currentPlayer }));
+            dispatch(setPositionsOfCurrentCheck(checksPositions));
         } else {
             dispatch(setCheckForPlayer({ color: null }));
+            dispatch(setPositionsOfCurrentCheck([]));
         }
     }, [currentPlayer]);
 
@@ -148,6 +151,7 @@ export default function ChessDesk() {
             deskInfo={deskInfo}
             currentPlayer={currentPlayer}
             currentCheck={currentCheck}
+            positionsOfCurrentCheck={positionsOfCurrentCheck}
         />
     )
 }

@@ -27,9 +27,13 @@ const mainSlice = createSlice({
       },
       setCheckForPlayer(state, action) {
         state.currentCheck = action.payload.color;
+      },
+      setPositionsOfCurrentCheck(state, action) {
+        const positions: IFigurePosition[] = action.payload;
+        state.positionsOfCurrentCheck = positions;
       }
     }
   })
 
-export const { changeFigurePosition, addRecordToHistory, setCheckForPlayer } = mainSlice.actions;
+export const { changeFigurePosition, addRecordToHistory, setCheckForPlayer, setPositionsOfCurrentCheck } = mainSlice.actions;
 export default mainSlice.reducer;  

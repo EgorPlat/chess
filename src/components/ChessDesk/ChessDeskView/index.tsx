@@ -1,4 +1,4 @@
-import { IDeskInfo, IDeskZone, IFigurePosition } from '../../../interfaces';
+import { Figure, IDeskInfo, IDeskZone, IFigurePosition } from '../../../interfaces';
 import ChessFigure from '../ChessFigureView';
 import './index.scss';
 
@@ -6,6 +6,7 @@ interface IChessDeskViewProps {
     currentPlayer: string,
     deskInfo: IDeskInfo,
     currentCheck: string | null,
+    positionsOfCurrentCheck: IFigurePosition[],
     handleDetectColor: (lineIndex: number, zoneIndex: number) => string,
     handleSetNewPosition: (lineIndex: number, zoneIndex: number) => void,
     handleClickFigure: (figure: IDeskZone, lineIndex: number, zoneIndex: number) => void
@@ -17,13 +18,22 @@ export default function ChessDeskView({
     handleDetectColor,
     handleSetNewPosition,
     handleClickFigure,
-    currentCheck
+    currentCheck,
+    positionsOfCurrentCheck
 }: IChessDeskViewProps) {
 
     return (
         <div className="desk">
             <div>Текущий ход: {currentPlayer}</div>
             <div>Текущий шах объявлен к: {currentCheck}</div>
+            <div>
+                Позиции шаха: 
+                {
+                    positionsOfCurrentCheck.map(el => (
+                        <div>{`${el.lineIndex} ${el.zoneIndex}`}</div>
+                    ))
+                }
+            </div>
             {
                 Object.keys(deskInfo).map((el: string, lineIndex: number) => {
                     return (

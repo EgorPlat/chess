@@ -87,5 +87,6 @@ export const DEFAULT_DESK: IDeskInfo = {
 export const INITIAL_MAIN_SLICE_STATE: IMainSlice = {
     deskInfo: DEFAULT_DESK,
     history: [],
-    currentCheck: null
+    currentCheck: null,
+    positionsOfCurrentCheck: []
 }
