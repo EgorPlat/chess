@@ -504,7 +504,9 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1, figure: figure.color+figure.value }];
+            for (let ny = 1; ny <= y; ny++) {
+                checkPositions = [...checkPositions, { lineIndex: line + ny, zoneIndex: zone + ny, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -515,7 +517,9 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1, figure: figure.color+figure.value }];
+            for (let nd = 1; nd <= d; nd++) {
+                checkPositions = [...checkPositions, { lineIndex: line - nd, zoneIndex: zone - nd, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -526,7 +530,9 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1, figure: figure.color+figure.value }];
+            for (let nc = 1; nc <= c; nc++) {
+                checkPositions = [...checkPositions, { lineIndex: line - nc, zoneIndex: zone - nc, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -537,7 +543,9 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1, figure: figure.color+figure.value }];
+            for (let ng = 1; ng <= g; ng++) {
+                checkPositions = [...checkPositions, { lineIndex: line - ng, zoneIndex: zone - ng, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -559,6 +567,7 @@ export const checkingThreatForKingInPosition = (
         if (figure.color === currentPlayer) return;
         if (figure.value === Figure.knight) {
             checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone, figure: figure.color+figure.value }];
+            checkPositions = [...checkPositions, { lineIndex: position.line, zoneIndex: position.zone, figure: figure.color+figure.value }];
         }
     });
 
