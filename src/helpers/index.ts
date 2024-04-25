@@ -43,8 +43,12 @@ export const checkNewFigurePositionCanSaveKingFromCheck = (
     lineIndex: number,
     zoneIndex: number
 ) => {
+    console.log(`${lineIndex} ${zoneIndex}`);
+    
+    
     const groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = 
         Object.groupBy(checkPositions, (checkPositions: IChecksInfo) => checkPositions.figure);
+        console.log(groupedCheckPositionsByFigure);
         
     if (Object.keys(groupedCheckPositionsByFigure).length > 1) return false;
     let isSave = false;
@@ -234,6 +238,9 @@ export const detectAllowedZonesForBishop = (
     for (let i = 1; i < 7; i++) {
         let newLine = line + i;
         let newZone = zone + i;
+        if (!isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            break;
+        }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) && 
             checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
@@ -245,9 +252,10 @@ export const detectAllowedZonesForBishop = (
                 checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
-                break;
+                if (currentCheck === null) {
+                    break;
+                }
             }
-            break;
         }
     }
     // для белых и черных одинаковая диагональ
@@ -257,6 +265,9 @@ export const detectAllowedZonesForBishop = (
         if (newLine < 0 || newZone < 0) {
             break;
         }
+        if (!isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            break;
+        }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
             checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
@@ -268,9 +279,10 @@ export const detectAllowedZonesForBishop = (
                 checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
-                break;
+                if (currentCheck === null) {
+                    break;
+                }
             }
-            break;
         }
     }
     for (let l = 1; l < 7; l++) {
@@ -279,6 +291,9 @@ export const detectAllowedZonesForBishop = (
         if (newZone < 0) {
             break;
         }
+        if (!isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            break;
+        }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
             checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
@@ -290,9 +305,10 @@ export const detectAllowedZonesForBishop = (
                 checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
-                break;
+                if (currentCheck === null) {
+                    break;
+                }
             }
-            break;
         }
     }
     for (let k = 1; k < 7; k++) {
@@ -301,6 +317,9 @@ export const detectAllowedZonesForBishop = (
         if (newLine < 0) {
             break;
         }
+        if (!isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer)) {
+            break;
+        }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
             checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
@@ -312,9 +331,10 @@ export const detectAllowedZonesForBishop = (
                 checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
-                break;
+                if (currentCheck === null) {
+                    break;
+                }
             }
-            break;
         }
     }
     return allowedPositions;
