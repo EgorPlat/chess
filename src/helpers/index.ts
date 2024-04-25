@@ -428,8 +428,8 @@ export const findKingOnTheDesk = (color: string, deskInfo: IDeskInfo) => {
 };
 
 export const checkingThreatForKingInPosition = (
-    line: number, 
-    zone: number, 
+    line: number, // позиция короля по вертикали
+    zone: number, // позиция короля по горизонтали
     currentPlayer: string, 
     deskInfo: IDeskInfo
 ) => {
@@ -440,7 +440,9 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, i, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone, figure: figure.color+figure.value }]; 
+            for (let ni = i; ni >= line + 1; ni--) {
+                checkPositions = [...checkPositions, { lineIndex: ni, zoneIndex: zone, figure: figure.color+figure.value }];
+            } 
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -448,7 +450,9 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, k, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone, figure: figure.color+figure.value }];
+            for (let nk = k; nk <= line - 1; nk++) {
+                checkPositions = [...checkPositions, { lineIndex: nk, zoneIndex: zone, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -456,7 +460,9 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, j);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone + 1, figure: figure.color+figure.value }];
+            for (let nj = j; nj >= zone + 1; nj--) {
+                checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: nj, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -464,7 +470,9 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, h);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone - 1, figure: figure.color+figure.value }];
+            for (let nh = h; nh <= zone - 1; nh++) {
+                checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: nh, figure: figure.color+figure.value }];
+            }
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
