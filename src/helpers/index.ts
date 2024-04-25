@@ -1,4 +1,4 @@
-import { Figure, IDeskInfo, IDeskZone, IFigurePosition } from "../interfaces";
+import { Figure, IChecksInfo, IDeskInfo, IDeskZone, IFigurePosition } from "../interfaces";
 
 export const isSquareZoneClear = (deskInfo: IDeskInfo, line: number, zone: number) => {
     if (zone < 8 && zone >= 0 && line < 8 && line >= 0) {
@@ -39,24 +39,28 @@ export const getFigureInSquareZone = (deskInfo: IDeskInfo, line: number, zone: n
 };
 
 export const checkNewFigurePositionCanSaveKingFromCheck = (
-    checkPositions: IFigurePosition[],
+    checkPositions: IChecksInfo[],
     lineIndex: number,
     zoneIndex: number
 ) => {
-    if (checkPositions.length > 1) return false;
+    const groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = 
+        Object.groupBy(checkPositions, (checkPositions: IChecksInfo) => checkPositions.figure);
+        
+    if (Object.keys(groupedCheckPositionsByFigure).length > 1) return false;
     let isSave = false;
-    checkPositions.map(el => {
+
+    checkPositions.map((el: IFigurePosition) => {
         if (el.lineIndex === lineIndex && zoneIndex === el.zoneIndex) {
             isSave = true;
         }
     });
-    if (checkPositions.length === 0) return true;
+    if (Object.keys(groupedCheckPositionsByFigure).length === 0) return true;
     return isSave;
 };
 
 export const checkIsKingCanMoveToSquare = (
     deskInfo: IDeskInfo,
-    checkPositions: IFigurePosition[],
+    checkPositions: IChecksInfo[],
     lineIndex: number,
     zoneIndex: number
 ) => {
@@ -79,7 +83,7 @@ export const detectAllowedZonesForPawn = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     if (currentPlayer === 'white') {
         let allowedPositions: IFigurePosition[] = [];
@@ -138,7 +142,7 @@ export const detectAllowedZonesForRook = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     if (currentPlayer === 'white' || currentPlayer === 'green') {
         let allowedPositions: IFigurePosition[] = [];
@@ -223,7 +227,7 @@ export const detectAllowedZonesForBishop = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
     // для белых и черных одинаковая диагональ
@@ -322,7 +326,7 @@ export const detectAllowedZonesForKing = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -360,7 +364,7 @@ export const detectAllowedZonesForKnight = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -398,7 +402,7 @@ export const detectAllowedZonesForQueen = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IFigurePosition[]
+    checkPositions: IChecksInfo[]
 ) => {
     return [
         ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions),
@@ -429,14 +433,14 @@ export const checkingThreatForKingInPosition = (
     currentPlayer: string, 
     deskInfo: IDeskInfo
 ) => {
-    let checkPositions: IFigurePosition[] = [];
+    let checkPositions: IChecksInfo[] = [];
 
     // проверка шахов по вертикалям и горизонатлям
     for (let i = line + 1; i < 8; i++) {
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, i, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone }];
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone, figure: figure.color+figure.value }]; 
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -444,7 +448,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, k, zone);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone }];
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -452,7 +456,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, j);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone + 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone + 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -460,7 +464,7 @@ export const checkingThreatForKingInPosition = (
         const figure: IDeskZone = getFigureInSquareZone(deskInfo, line, h);
         if (figure.color === currentPlayer) break;
         if (isFigureAreRookOrQueen(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone - 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone - 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -472,7 +476,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -483,7 +487,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -494,7 +498,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -505,7 +509,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) break;
         if (figure.color === currentPlayer) break;
         if (isFigureAreQueenOrBishop(figure)) {
-            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
+            checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1, figure: figure.color+figure.value }];
         }
         if (figure.color !== currentPlayer && figure.value !== null) break;
     }
@@ -526,7 +530,7 @@ export const checkingThreatForKingInPosition = (
         if (!figure) return;
         if (figure.color === currentPlayer) return;
         if (figure.value === Figure.knight) {
-            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone }];
+            checkPositions = [...checkPositions, { lineIndex: line, zoneIndex: zone, figure: figure.color+figure.value }];
         }
     });
 
@@ -544,9 +548,15 @@ export const checkingThreatForKingInPosition = (
         if (firstFigure.color !== currentPlayer) {
             if (firstFigure.value === Figure.pawn) {
                 if (currentPlayer === 'green') {
-                    checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
+                    checkPositions = [
+                        ...checkPositions, 
+                        { lineIndex: line - 1, zoneIndex: zone + 1, figure: firstFigure.color+firstFigure.value }
+                    ];
                 } else {
-                    checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
+                    checkPositions = [
+                        ...checkPositions, 
+                        { lineIndex: line + 1, zoneIndex: zone + 1, figure: firstFigure.color+firstFigure.value }
+                    ];
                 }
             }
         };
@@ -555,9 +565,15 @@ export const checkingThreatForKingInPosition = (
         if (secondFigure.color !== currentPlayer) {
             if (secondFigure.value === Figure.pawn) {
                 if (currentPlayer === 'green') {
-                    checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
+                    checkPositions = [
+                        ...checkPositions, 
+                        { lineIndex: line - 1, zoneIndex: zone - 1, figure: secondFigure.color+secondFigure.value }
+                    ];
                 } else {
-                    checkPositions = [...checkPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
+                    checkPositions = [
+                        ...checkPositions, 
+                        { lineIndex: line + 1, zoneIndex: zone - 1, figure: secondFigure.color+secondFigure.value }
+                    ];
                 }
             }
         };

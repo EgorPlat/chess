@@ -1,16 +1,25 @@
 import { useDispatch, useSelector } from "react-redux"
 import { IRootStore } from "../../interfaces/slices";
-import { IActiveFigure, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
+import { IActiveFigure, IChecksInfo, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
 import { addRecordToHistory, changeFigurePosition, setCheckForPlayer, setPositionsOfCurrentCheck } from "../../store/slices/mainSlice";
-import { detectAllowedZonesForPawn, detectAllowedZonesForRook, detectAllowedZonesForBishop, detectAllowedZonesForQueen, detectAllowedZonesForKing, detectAllowedZonesForKnight, findKingOnTheDesk, checkingThreatForKingInPosition } from "../../helpers";
+import { 
+    detectAllowedZonesForPawn, 
+    detectAllowedZonesForRook, 
+    detectAllowedZonesForBishop, 
+    detectAllowedZonesForQueen, 
+    detectAllowedZonesForKing, 
+    detectAllowedZonesForKnight, 
+    findKingOnTheDesk, 
+    checkingThreatForKingInPosition 
+} from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
 
 export default function ChessDesk() {
 
     const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.main.deskInfo);
     const currentCheck: string | null = useSelector((store: IRootStore) => store.main.currentCheck);
-    const positionsOfCurrentCheck: IFigurePosition[] = useSelector((store: IRootStore) => store.main.positionsOfCurrentCheck);
+    const positionsOfCurrentCheck: IChecksInfo[] = useSelector((store: IRootStore) => store.main.positionsOfCurrentCheck);
     const [activeFigure, setActiveFigure] = useState<IActiveFigure | null>(null);
     const [newPosition, setNewPosition] = useState<IFigurePosition | null>(null);
     const [currentPlayer, setCurentPlayer] = useState<string>('white');

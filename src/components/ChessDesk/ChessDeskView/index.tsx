@@ -30,7 +30,7 @@ export default function ChessDeskView({
                 Позиции шаха: 
                 {
                     positionsOfCurrentCheck.map(el => (
-                        <div>{`${el.lineIndex} ${el.zoneIndex}`}</div>
+                        <div key={String(el.lineIndex + currentPlayer)}>{`${el.lineIndex} ${el.zoneIndex}`}</div>
                     ))
                 }
             </div>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IActiveFigure, IFigureColor, IFigurePosition } from "../../interfaces";
+import { IActiveFigure, IChecksInfo, IFigureColor, IFigurePosition } from "../../interfaces";
 import { INITIAL_MAIN_SLICE_STATE } from "../constants";
 
 const mainSlice = createSlice({
@@ -29,7 +29,7 @@ const mainSlice = createSlice({
         state.currentCheck = action.payload.color;
       },
       setPositionsOfCurrentCheck(state, action) {
-        const positions: IFigurePosition[] = action.payload;
+        const positions: IChecksInfo[] = action.payload;
         state.positionsOfCurrentCheck = positions;
       }
     }

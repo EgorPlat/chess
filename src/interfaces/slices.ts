@@ -1,10 +1,10 @@
-import { IDeskInfo, IFigurePosition, IHistoryElement } from "."
+import { IChecksInfo, IDeskInfo, IHistoryElement } from "."
 
 export interface IMainSlice {
     deskInfo: IDeskInfo,
     history: IHistoryElement[],
     currentCheck: string | null,
-    positionsOfCurrentCheck: IFigurePosition[]
+    positionsOfCurrentCheck: IChecksInfo[]
 };
 
 export interface IRootStore {
