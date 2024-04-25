@@ -43,6 +43,7 @@ export const checkNewFigurePositionCanSaveKingFromCheck = (
     lineIndex: number,
     zoneIndex: number
 ) => {
+    if (checkPositions.length > 1) return false;
     let isSave = false;
     checkPositions.map(el => {
         if (el.lineIndex === lineIndex && zoneIndex === el.zoneIndex) {
@@ -551,8 +552,8 @@ export const checkingThreatForKingInPosition = (
         };
     }
     if (secondFigure) {
-        if (firstFigure.color !== currentPlayer) {
-            if (firstFigure.value === Figure.pawn) {
+        if (secondFigure.color !== currentPlayer) {
+            if (secondFigure.value === Figure.pawn) {
                 if (currentPlayer === 'green') {
                     checkPositions = [...checkPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
                 } else {
