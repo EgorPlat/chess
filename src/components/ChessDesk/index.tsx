@@ -44,32 +44,32 @@ export default function ChessDesk() {
         }
         if (activeFigure.figure.value === 0) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForPawn(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForPawn(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
         if (activeFigure.figure.value === 1) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForRook(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForRook(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
         if (activeFigure.figure.value === 2) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForBishop(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForBishop(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
         if (activeFigure.figure.value === 3) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForQueen(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForQueen(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
         if (activeFigure.figure.value === 4) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKing(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForKing(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
         if (activeFigure.figure.value === 5) {
             setAllowedPositionForFigure(
-                detectAllowedZonesForKnight(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck)
+                detectAllowedZonesForKnight(props.line, props.zone, currentPlayer, deskInfo, currentCheck, positionsOfCurrentCheck, activeFigure)
             )
         }
     };

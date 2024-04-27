@@ -104,28 +104,32 @@ export const detectAllowedZonesForPawn = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     if (currentPlayer === 'white') {
         let allowedPositions: IFigurePosition[] = [];
         const allowedPositionZone = Object.values(deskInfo)[line + 1][zone]; 
         if (
             allowedPositionZone.value === null &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line + 1, zoneIndex: zone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone }];
         }
         if (
             isSquareZoneNotClear(deskInfo, line + 1, zone + 1) &&
             isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone + 1, currentPlayer) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone + 1)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone + 1) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line + 1, zoneIndex: zone + 1 }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone + 1 }];
         }
         if (
             isSquareZoneNotClear(deskInfo, line + 1, zone - 1) &&
             isSquareZoneFigureNotCurrentPlayer(deskInfo, line + 1, zone - 1, currentPlayer) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone - 1)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line + 1, zone - 1) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line + 1, zoneIndex: zone - 1 }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line + 1, zoneIndex: zone - 1 }];
         }
@@ -142,14 +146,16 @@ export const detectAllowedZonesForPawn = (
         if ( 
             isSquareZoneNotClear(deskInfo, line - 1, zone - 1) &&
             isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone - 1, currentPlayer) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone - 1)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone - 1) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line - 1, zoneIndex: zone - 1 }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone - 1 }];
         }
         if ( 
             isSquareZoneNotClear(deskInfo, line - 1, zone + 1) &&
             isSquareZoneFigureNotCurrentPlayer(deskInfo, line - 1, zone + 1, currentPlayer) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone + 1)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone + 1) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line - 1, zoneIndex: zone + 1 }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone + 1 }];
         }
@@ -163,7 +169,8 @@ export const detectAllowedZonesForRook = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     if (currentPlayer === 'white' || currentPlayer === 'green') {
         let allowedPositions: IFigurePosition[] = [];
@@ -173,13 +180,15 @@ export const detectAllowedZonesForRook = (
             }
             if (
                 isSquareZoneClear(deskInfo, i, zone) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: i, zoneIndex: zone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: i, zoneIndex: zone }];
             } else {
                 if (
                     isSquareZoneFigureNotCurrentPlayer(deskInfo, i, zone, currentPlayer) &&
-                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone)
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, i, zone) &&
+                    checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: i, zoneIndex: zone }, currentPlayer)
                 ) {
                     allowedPositions = [...allowedPositions, { lineIndex: i, zoneIndex: zone }];
                     if (currentCheck === null) break;
@@ -192,13 +201,15 @@ export const detectAllowedZonesForRook = (
             }
             if (
                 isSquareZoneClear(deskInfo, k, zone) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: k, zoneIndex: zone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: k, zoneIndex: zone }];
             } else {
                 if (
                     isSquareZoneFigureNotCurrentPlayer(deskInfo, k, zone, currentPlayer) &&
-                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone)
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, k, zone) &&
+                    checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: k, zoneIndex: zone }, currentPlayer)
                 ) {
                     allowedPositions = [...allowedPositions, { lineIndex: k, zoneIndex: zone }];
                     if (currentCheck === null) break;
@@ -211,13 +222,15 @@ export const detectAllowedZonesForRook = (
             }
             if (
                 isSquareZoneClear(deskInfo, line, j) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line, zoneIndex: j }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: j }];
             } else {
                 if (
                     isSquareZoneFigureNotCurrentPlayer(deskInfo, line, j, currentPlayer) &&
-                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j)
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, j) &&
+                    checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line, zoneIndex: j }, currentPlayer)
                 ) {
                     allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: j }];
                     if (currentCheck === null) break;
@@ -230,13 +243,15 @@ export const detectAllowedZonesForRook = (
             }
             if (
                 isSquareZoneClear(deskInfo, line, l) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line, zoneIndex: l }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: l }];
             } else {
                 if (
                     isSquareZoneFigureNotCurrentPlayer(deskInfo, line, l, currentPlayer) &&
-                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l)
+                    checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line, l) &&
+                    checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line, zoneIndex: l }, currentPlayer)
                 ) {
                     allowedPositions = [...allowedPositions, { lineIndex: line, zoneIndex: l }];
                     if (currentCheck === null) break
@@ -256,7 +271,8 @@ export const detectAllowedZonesForBishop = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     let allowedPositions: IFigurePosition[] = [];
     // для белых и черных одинаковая диагональ
@@ -268,13 +284,15 @@ export const detectAllowedZonesForBishop = (
         }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) && 
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 if (currentCheck === null) {
@@ -295,13 +313,15 @@ export const detectAllowedZonesForBishop = (
         }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 if (currentCheck === null) {
@@ -321,13 +341,15 @@ export const detectAllowedZonesForBishop = (
         }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 if (currentCheck === null) {
@@ -347,13 +369,15 @@ export const detectAllowedZonesForBishop = (
         }
         if (
             isSquareZoneClear(deskInfo, newLine, newZone) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, newLine, newZone, currentPlayer) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, newLine, newZone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: newLine, zoneIndex: newZone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: newLine, zoneIndex: newZone }];
                 if (currentCheck === null) {
@@ -371,7 +395,8 @@ export const detectAllowedZonesForKing = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -388,13 +413,15 @@ export const detectAllowedZonesForKing = (
     possiblePositions.map(position => {
         if (
             isSquareZoneClear(deskInfo, position.line, position.zone) &&
-            checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone)
+            checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: position.line, zoneIndex: position.zone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer) &&
-                checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone)
+                checkIsKingCanMoveToSquare(deskInfo, checkPositions, position.line, position.zone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: position.line, zoneIndex: position.zone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
             }
@@ -409,7 +436,8 @@ export const detectAllowedZonesForKnight = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     let allowedPositions: IFigurePosition[] = [];
 
@@ -426,13 +454,15 @@ export const detectAllowedZonesForKnight = (
     possiblePositions.map(position => {
         if (
             isSquareZoneClear(deskInfo, position.line, position.zone) &&
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: position.line, zoneIndex: position.zone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
         } else {
             if (
                 isSquareZoneFigureNotCurrentPlayer(deskInfo, position.line, position.zone, currentPlayer) &&
-                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone)
+                checkNewFigurePositionCanSaveKingFromCheck(checkPositions, position.line, position.zone) &&
+                checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: position.line, zoneIndex: position.zone }, currentPlayer)
             ) {
                 allowedPositions = [...allowedPositions, { lineIndex: position.line, zoneIndex: position.zone }];
             }
@@ -447,11 +477,12 @@ export const detectAllowedZonesForQueen = (
     currentPlayer: string, 
     deskInfo: IDeskInfo,
     currentCheck: string | null,
-    checkPositions: IChecksInfo[]
+    checkPositions: IChecksInfo[],
+    activeFigure: IActiveFigure,
 ) => {
     return [
-        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions),
-        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions)
+        ...detectAllowedZonesForBishop(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions, activeFigure),
+        ...detectAllowedZonesForRook(line, zone, currentPlayer, deskInfo, currentCheck, checkPositions, activeFigure)
     ];
 };
 

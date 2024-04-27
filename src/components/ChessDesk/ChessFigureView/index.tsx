@@ -1,12 +1,6 @@
-import { 
-    LiaChessPawnSolid, 
-    LiaChessQueenSolid, 
-    LiaChessKingSolid,
-    LiaChessKnightSolid,
-    LiaChessBishopSolid,
-    LiaChessRookSolid
-} from "react-icons/lia";
+import { GiChessBishop, GiChessKing, GiChessKnight, GiChessPawn, GiChessQueen, GiChessRook } from "react-icons/gi";
 import { Figure } from "../../../interfaces";
+import './index.scss';
 
 export default function ChessFigure(props: {
     figureName: Figure | null,
@@ -15,22 +9,22 @@ export default function ChessFigure(props: {
 }) {
     switch (props.figureName) {
         case Figure.pawn: {
-            return <LiaChessPawnSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessPawn color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         case Figure.rook: {
-            return <LiaChessRookSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessRook color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         case Figure.bishop: {
-            return <LiaChessBishopSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessBishop color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         case Figure.king: {
-            return <LiaChessKingSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessKing color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         case Figure.knight: {
-            return <LiaChessKnightSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessKnight color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         case Figure.queen: {
-            return <LiaChessQueenSolid color={props.figureColor} fontSize={50} onClick={props.onClick} />;
+            return <GiChessQueen color={props.figureColor} className="figure" onClick={props.onClick} />;
         }
         default: {
             return null;

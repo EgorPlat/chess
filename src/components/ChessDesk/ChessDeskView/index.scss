@@ -3,6 +3,26 @@
     grid-template-columns: 1fr;
     justify-content: center;
     justify-items: center;
+    & .infoBlock {
+        display: grid;
+        justify-content: left;
+        justify-items: left;
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    & .checkPositions {
+        justify-content: left;
+        justify-items: left;
+        display: flex;
+        width: 100%;
+        margin-bottom: 10px;
+        & .eachPosition {
+            border: 1px solid gray;
+            margin-left: 10px;
+            border-radius: 5px;
+            padding: 2px;
+        }
+    }
     & .line {
         display: grid;
         width: 560px;
@@ -20,6 +40,33 @@
             }
             & .figure {
                 color: red;
+            }
+        }
+    }
+}
+
+
+@media screen and (max-width: 750px) {
+    .desk {
+        justify-content: left;
+        & .line {
+            width: 400px;
+            height: 50px;
+        }
+    }
+}
+
+@media screen and (max-width: 410px) {
+    .desk {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        & .line {
+            display: flex;
+            width: 360px;
+            height: 45px;
+            & .zone {
+                width: 45px;
             }
         }
     }

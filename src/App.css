@@ -10,9 +10,16 @@
   column-gap: 10px;
 }
 
+@media screen and (max-width: 750px) {
+  .chess {
+    display: flex;
+    flex-direction: column;
+  }
+}
 /* width */
 ::-webkit-scrollbar {
   width: 1px;
+  height: 1px;
 }
 
 /* Track */

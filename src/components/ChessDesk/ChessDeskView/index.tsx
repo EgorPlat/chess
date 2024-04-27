@@ -24,13 +24,13 @@ export default function ChessDeskView({
 
     return (
         <div className="desk">
-            <div>Текущий ход: {currentPlayer}</div>
-            <div>Текущий шах объявлен к: {currentCheck}</div>
-            <div>
+            <div className='infoBlock'>Текущий ход: {currentPlayer}</div>
+            <div className='infoBlock'>Текущий шах объявлен к: {currentCheck}</div>
+            <div className='checkPositions'>
                 Позиции шаха: 
                 {
                     positionsOfCurrentCheck.map(el => (
-                        <div key={String(el.lineIndex + currentPlayer)}>{`${el.lineIndex} ${el.zoneIndex}`}</div>
+                        <div key={String(el.lineIndex + currentPlayer)} className='eachPosition'>{`${el.lineIndex}-${el.zoneIndex}`}</div>
                     ))
                 }
             </div>
