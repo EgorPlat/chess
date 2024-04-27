@@ -99,7 +99,6 @@ export default function ChessDesk() {
     };
 
     const handleClickFigure = (figure: IDeskZone, lineIndex: number, zoneIndex: number) => {
-        alert(figure);
         if (figure?.color === currentPlayer) {
             setAllowedPositionForFigure([]);
             setActiveFigure({
