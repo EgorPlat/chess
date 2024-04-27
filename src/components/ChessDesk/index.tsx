@@ -92,7 +92,7 @@ export default function ChessDesk() {
         }
         allowedPositionForFigure.map(position => {
             if (position.lineIndex === lineIndex && zoneIndex === position.zoneIndex) {
-                color = "green";
+                color = "lightgreen";
             }
         })
         return color;

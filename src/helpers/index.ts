@@ -64,8 +64,13 @@ export const checkNewFigurePositionCanSaveKingFromCheck = (
     lineIndex: number,
     zoneIndex: number
 ) => {   
-    const groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = 
-        Object.groupBy(checkPositions, (checkPositions: IChecksInfo) => checkPositions.figure);
+    /*const groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = 
+        Object.groupBy(checkPositions, (checkPositions: IChecksInfo) => checkPositions.figure);*/
+    
+    let groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = {}
+    checkPositions.map(el => {
+        groupedCheckPositionsByFigure[el.figure] = [...groupedCheckPositionsByFigure[el.figure] || [], el];
+    });
         
     if (Object.keys(groupedCheckPositionsByFigure).length > 1) return false;
     let isSave = false;
