@@ -85,6 +85,8 @@ export default function ChessDesk() {
     const handleDetectColor = (lineIndex: number, zoneIndex: number) => {
         let color = "";
         const sum = lineIndex + zoneIndex;
+        console.log(sum);
+        
         if (sum % 2 === 0) {
             color = "black";
         } else {
@@ -92,7 +94,7 @@ export default function ChessDesk() {
         }
         allowedPositionForFigure.map(position => {
             if (position.lineIndex === lineIndex && zoneIndex === position.zoneIndex) {
-                color = "lightgreen";
+                color = "green";
             }
         })
         return color;
