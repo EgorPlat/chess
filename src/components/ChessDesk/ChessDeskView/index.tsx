@@ -1,5 +1,6 @@
 import { Figure, IDeskInfo, IDeskZone, IFigurePosition } from '../../../interfaces';
 import ChessFigure from '../ChessFigureView';
+import { FaCircle } from "react-icons/fa6";
 import './index.scss';
 
 interface IChessDeskViewProps {
@@ -7,7 +8,7 @@ interface IChessDeskViewProps {
     deskInfo: IDeskInfo,
     currentCheck: string | null,
     positionsOfCurrentCheck: IFigurePosition[],
-    handleDetectColor: (lineIndex: number, zoneIndex: number) => string,
+    handleDetectColor: (lineIndex: number, zoneIndex: number) => { color: string, allowed: boolean },
     handleSetNewPosition: (lineIndex: number, zoneIndex: number) => void,
     handleClickFigure: (figure: IDeskZone, lineIndex: number, zoneIndex: number) => void
 };
@@ -30,7 +31,7 @@ export default function ChessDeskView({
                 Позиции шаха: 
                 {
                     positionsOfCurrentCheck.map(el => (
-                        <div key={String(el.lineIndex + currentPlayer)} className='eachPosition'>{`${el.lineIndex}-${el.zoneIndex}`}</div>
+                        <div key={Math.random()} className='eachPosition'>{`${el.lineIndex}-${el.zoneIndex}`}</div>
                     ))
                 }
             </div>
@@ -40,12 +41,12 @@ export default function ChessDeskView({
                         <div className="line" key={el}>
                             {
                                 Object.values(deskInfo)[lineIndex].map((zoneContent: IDeskZone, zoneIndex: number) => {
-                                    const color = handleDetectColor(lineIndex, zoneIndex);
+                                    const result = handleDetectColor(lineIndex, zoneIndex);
                                     return (
                                         <div 
                                             className="zone" 
                                             key={String(el + zoneIndex)}
-                                            style={{ backgroundColor: color }}
+                                            style={{ backgroundColor: result.color }}
                                             onClick={() => handleSetNewPosition(lineIndex, zoneIndex)}
                                         >
                                             <div className="figure">
@@ -54,6 +55,14 @@ export default function ChessDeskView({
                                                         onClick={() => handleClickFigure(zoneContent, lineIndex, zoneIndex)}
                                                         figureName={zoneContent.value}
                                                         figureColor={zoneContent.color}
+                                                    />
+                                                }
+                                                {
+                                                    result.allowed && 
+                                                    <FaCircle 
+                                                        className='allowedDot' 
+                                                        color='lightgreen' 
+                                                        fontSize={25} 
                                                     />
                                                 }
                                             </div>

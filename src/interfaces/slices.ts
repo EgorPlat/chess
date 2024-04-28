@@ -4,7 +4,8 @@ export interface IMainSlice {
     deskInfo: IDeskInfo,
     history: IHistoryElement[],
     currentCheck: string | null,
-    positionsOfCurrentCheck: IChecksInfo[]
+    positionsOfCurrentCheck: IChecksInfo[],
+    figureForSwap: number | null
 };
 
 export interface IRootStore {

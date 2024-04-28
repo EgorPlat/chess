@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux"
 import { IRootStore } from "../../interfaces/slices";
-import { IActiveFigure, IChecksInfo, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
+import { Figure, IActiveFigure, IChecksInfo, IDeskInfo, IDeskZone, IFigurePosition } from "../../interfaces";
 import { useEffect, useState } from "react";
-import { addRecordToHistory, changeFigurePosition, setCheckForPlayer, setPositionsOfCurrentCheck } from "../../store/slices/mainSlice";
+import { addRecordToHistory, changeFigurePosition, setCheckForPlayer, setFigureForSwap, setNewPositionForPawnWithSwap, setPositionsOfCurrentCheck } from "../../store/slices/mainSlice";
 import { 
     detectAllowedZonesForPawn, 
     detectAllowedZonesForRook, 
@@ -11,19 +11,24 @@ import {
     detectAllowedZonesForKing, 
     detectAllowedZonesForKnight, 
     findKingOnTheDesk, 
-    checkingThreatForKingInPosition 
+    checkingThreatForKingInPosition, 
+    checkIsPawnEnableToSwap
 } from "../../helpers";
 import ChessDeskView from "./ChessDeskView";
+import ChessSwapPawn from "../ChessSwapPawn";
 
 export default function ChessDesk() {
 
     const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.main.deskInfo);
     const currentCheck: string | null = useSelector((store: IRootStore) => store.main.currentCheck);
     const positionsOfCurrentCheck: IChecksInfo[] = useSelector((store: IRootStore) => store.main.positionsOfCurrentCheck);
+    const figureForSwap: number | null = useSelector((store: IRootStore) => store.main.figureForSwap);
+
     const [activeFigure, setActiveFigure] = useState<IActiveFigure | null>(null);
     const [newPosition, setNewPosition] = useState<IFigurePosition | null>(null);
     const [currentPlayer, setCurentPlayer] = useState<string>('white');
     const [allowedPositionForFigure, setAllowedPositionForFigure] = useState<IFigurePosition[]>([]);
+    const [isPawnEnableToSwap, setIsPawnEnableToSwap] = useState<boolean>(false);
     const dispatch = useDispatch();
 
     const handleDetectIsNewPositionInAllowed = (lineIndex: number, zoneIndex: number) => {
@@ -83,19 +88,19 @@ export default function ChessDesk() {
     };
 
     const handleDetectColor = (lineIndex: number, zoneIndex: number) => {
-        let color = "";
+        let result = { color: "", allowed: false };
         const sum = lineIndex + zoneIndex;
         if (sum % 2 === 0) {
-            color = "black";
+            result = { ...result, color: "black" };
         } else {
-            color = "#a88132";
+            result = { ...result, color: "#a88132" };
         }
         allowedPositionForFigure.map(position => {
             if (position.lineIndex === lineIndex && zoneIndex === position.zoneIndex) {
-                color = "lightgreen";
+                result = { ...result, allowed: true };
             }
         })
-        return color;
+        return result;
     };
 
     const handleClickFigure = (figure: IDeskZone, lineIndex: number, zoneIndex: number) => {
@@ -126,17 +131,42 @@ export default function ChessDesk() {
         }
     };
 
+    const handleChooseFigure = (id: number) => {
+        dispatch(setFigureForSwap(id));
+        setIsPawnEnableToSwap(false);
+    };
+
     useEffect(() => {
-        if (activeFigure) {
-            handleDetectAllowedPositionsForFigure();
-        }
-        if (activeFigure && newPosition) {
-            dispatch(changeFigurePosition({ activeFigure, newPosition }));
+        if (activeFigure && newPosition && figureForSwap) {
+            dispatch(setNewPositionForPawnWithSwap({ previousPosition: activeFigure.position, newPosition, currentPlayer }));
+            dispatch(setFigureForSwap(null));
             dispatch(addRecordToHistory({ figureColor: currentPlayer, activeFigure, newPosition }));
             setAllowedPositionForFigure([]);
             setActiveFigure(null);
             setNewPosition(null);
             swapCurrentPlayer();
+        }
+    }, [activeFigure, newPosition, figureForSwap]);
+
+    useEffect(() => {
+        if (activeFigure) {
+            handleDetectAllowedPositionsForFigure();
+        }
+        if (activeFigure && newPosition) {
+            if (
+                activeFigure.figure.value === Figure.pawn && 
+                checkIsPawnEnableToSwap(newPosition.lineIndex, newPosition.zoneIndex, currentPlayer, deskInfo)
+            ) { 
+                setIsPawnEnableToSwap(true);
+            }
+            else {
+                dispatch(changeFigurePosition({ activeFigure, newPosition }));
+                dispatch(addRecordToHistory({ figureColor: currentPlayer, activeFigure, newPosition }));
+                setAllowedPositionForFigure([]);
+                setActiveFigure(null);
+                setNewPosition(null);
+                swapCurrentPlayer();
+            }
         }
     }, [activeFigure, newPosition]);
 
@@ -145,22 +175,27 @@ export default function ChessDesk() {
         const checksPositions = checkingThreatForKingInPosition(currentKing.line, currentKing.zone, currentPlayer, deskInfo);
         if (checksPositions.length !== 0) {
             dispatch(setCheckForPlayer({ color: currentPlayer }));
-            dispatch(setPositionsOfCurrentCheck(checksPositions));
+            dispatch(setPositionsOfCurrentCheck({ positions: checksPositions }));
         } else {
+            dispatch(setPositionsOfCurrentCheck({ positions: [] }));
             dispatch(setCheckForPlayer({ color: null }));
-            dispatch(setPositionsOfCurrentCheck([]));
         }
     }, [currentPlayer]);
 
     return (
-        <ChessDeskView 
-            handleDetectColor={handleDetectColor}
-            handleClickFigure={handleClickFigure}
-            handleSetNewPosition={handleSetNewPosition}
-            deskInfo={deskInfo}
-            currentPlayer={currentPlayer}
-            currentCheck={currentCheck}
-            positionsOfCurrentCheck={positionsOfCurrentCheck}
-        />
+        <>
+            <ChessDeskView 
+                handleDetectColor={handleDetectColor}
+                handleClickFigure={handleClickFigure}
+                handleSetNewPosition={handleSetNewPosition}
+                deskInfo={deskInfo}
+                currentPlayer={currentPlayer}
+                currentCheck={currentCheck}
+                positionsOfCurrentCheck={positionsOfCurrentCheck}
+            />
+            {
+                isPawnEnableToSwap && <ChessSwapPawn handleChooseFigure={handleChooseFigure} />
+            }
+        </>
     )
 }

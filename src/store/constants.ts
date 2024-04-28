@@ -88,5 +88,6 @@ export const INITIAL_MAIN_SLICE_STATE: IMainSlice = {
     deskInfo: DEFAULT_DESK,
     history: [],
     currentCheck: null,
-    positionsOfCurrentCheck: []
+    positionsOfCurrentCheck: [],
+    figureForSwap: null
 }

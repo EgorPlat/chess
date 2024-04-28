@@ -64,9 +64,6 @@ export const checkNewFigurePositionCanSaveKingFromCheck = (
     lineIndex: number,
     zoneIndex: number
 ) => {   
-    /*const groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = 
-        Object.groupBy(checkPositions, (checkPositions: IChecksInfo) => checkPositions.figure);*/
-    
     let groupedCheckPositionsByFigure: Partial<Record<string, IChecksInfo[]>> = {}
     checkPositions.map(el => {
         groupedCheckPositionsByFigure[el.figure] = [...groupedCheckPositionsByFigure[el.figure] || [], el];
@@ -101,6 +98,12 @@ export const checkIsKingCanMoveToSquare = (
         }
     });
     return isMove;
+};
+
+export const checkIsPawnEnableToSwap = (line: number, zone: number, currentPlayer: string, deskInfo: IDeskInfo) => {
+    if (currentPlayer === 'white' && line === 7) return true;
+    if (currentPlayer === 'green' && line === 0) return true;
+    return false;
 };
 
 export const detectAllowedZonesForPawn = (
@@ -144,7 +147,8 @@ export const detectAllowedZonesForPawn = (
         const allowedPositionZone = Object.values(deskInfo)[line - 1][zone];
         if (
             allowedPositionZone.value === null && 
-            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone)
+            checkNewFigurePositionCanSaveKingFromCheck(checkPositions, line - 1, zone) &&
+            checkIsFigureCanMoveWithoutCheck(deskInfo, activeFigure, { lineIndex: line - 1, zoneIndex: zone }, currentPlayer)
         ) {
             allowedPositions = [...allowedPositions, { lineIndex: line - 1, zoneIndex: zone }];
         }

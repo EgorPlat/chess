@@ -39,7 +39,16 @@
                 font-weight: 800;
             }
             & .figure {
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 color: red;
+                position: relative;
+                z-index: 10;
+                & .allowedDot {
+                    z-index: 9;
+                    position: fixed;
+                }
             }
         }
     }
