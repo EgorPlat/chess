@@ -1,0 +1,141 @@
+.customModal {
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.885);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    & .customModalContent {
+        display: grid;
+        row-gap: 15px;
+        font-size: 24px;
+        padding: 20px;
+        border-radius: 5px;
+        max-height: 620px;
+        width: 500px;
+        background-color: white;
+        color: black;
+        & .customModalTitle {
+            display: grid;
+            grid-template-columns: 95% 5%;
+            font-size: 20px;
+            min-height: 20px;
+            & .customModalClose {
+                display: flex;
+                justify-content: center;
+                justify-items: center;
+                align-items: center;
+                text-align: center;
+                font-size: 16px;
+                width: 25px;
+                height: 25px;
+                background-color: rgb(0, 174, 255);
+                border-radius: 50%;
+                font-weight: 600;
+                border: none;
+                color: white;
+            }
+            & .customModalClose:hover {
+                cursor: pointer;
+                background-color: rgba(255, 200, 0, 0.956);
+                color: black;
+            }
+        }
+        & .customModalChildrenContent {
+            max-height: 450px;
+            width: 100%;
+            padding-right: 10px;
+            font-size: 16px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+    }
+    & .manageCustomModal {
+        & button {
+            outline: none;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            padding: 5px;
+            font-size: 15px;
+            margin-right: 1%;
+            margin-top: 2%;
+        }
+        & .confirmBtn {
+            width: 110px;
+            min-height: 30px;
+            background-color: rgb(0, 174, 255);
+        }
+        & .confirmBtn:hover {
+            background-color: rgb(255, 171, 35);
+            color: black;
+        }
+        & .cancelBtn {
+            width: 110px;
+            min-height: 30px;
+            background-color: rgb(65, 65, 65);
+        }
+        & .cancelBtn:hover {
+            background-color: rgb(255, 171, 35);
+            color: black;
+        }
+    }
+}
+@media screen and (max-width: 1536px) {
+    .customModal {
+        & .customModalContent {
+            width: 500px;
+            font-size: 16px;
+            & .customModalTitle {
+                font-size: 18px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .customModal {
+        & .customModalContent {
+            width: 500px;
+            & .customModalTitle {
+                font-size: 21px;
+            }
+        }
+    }
+}
+@media screen and (max-width: 500px) {
+    .customModal {
+        & .customModalContent {
+            width: 500px;
+            & .customModalTitle {
+                font-size: 18px;
+            }
+        }
+    }
+}
+@media screen and (max-width: 500px) {
+    .customModal {
+        & .customModalContent {
+            width: 400px;
+        }
+    }
+}
+@media screen and (max-width: 450px) {
+    .customModal {
+        & .customModalContent {
+            width: 350px
+        }
+    }
+}
+@media screen and (max-width: 400px) {
+    .customModal {
+        & .customModalContent {
+            width: 300px
+        }
+    }
+}

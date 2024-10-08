@@ -1,7 +1,8 @@
-import { Figure, IDeskInfo, IDeskZone, IFigurePosition } from '../../../interfaces';
+import { IDeskInfo, IDeskZone, IFigurePosition } from '../../../interfaces';
 import ChessFigure from '../ChessFigureView';
 import { FaCircle } from "react-icons/fa6";
 import './index.scss';
+import React from 'react';
 
 interface IChessDeskViewProps {
     currentPlayer: string,

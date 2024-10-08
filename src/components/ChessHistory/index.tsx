@@ -4,7 +4,7 @@ import ChessHistoryView from "./ChessHisotryView";
 
 export default function ChessHistory() {
 
-    const history = useSelector((store: IRootStore) => store.main.history);
+    const history = useSelector((store: IRootStore) => store.rootReducer.main.history);
 
     return (
         <ChessHistoryView 

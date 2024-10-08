@@ -19,10 +19,10 @@ import ChessSwapPawn from "../ChessSwapPawn";
 
 export default function ChessDesk() {
 
-    const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.main.deskInfo);
-    const currentCheck: string | null = useSelector((store: IRootStore) => store.main.currentCheck);
-    const positionsOfCurrentCheck: IChecksInfo[] = useSelector((store: IRootStore) => store.main.positionsOfCurrentCheck);
-    const figureForSwap: number | null = useSelector((store: IRootStore) => store.main.figureForSwap);
+    const deskInfo: IDeskInfo = useSelector((store: IRootStore) => store.rootReducer.main.deskInfo);
+    const currentCheck: string | null = useSelector((store: IRootStore) => store.rootReducer.main.currentCheck);
+    const positionsOfCurrentCheck: IChecksInfo[] = useSelector((store: IRootStore) => store.rootReducer.main.positionsOfCurrentCheck);
+    const figureForSwap: number | null = useSelector((store: IRootStore) => store.rootReducer.main.figureForSwap);
 
     const [activeFigure, setActiveFigure] = useState<IActiveFigure | null>(null);
     const [newPosition, setNewPosition] = useState<IFigurePosition | null>(null);

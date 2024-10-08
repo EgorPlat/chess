@@ -1,6 +1,7 @@
 import { GiChessBishop, GiChessKing, GiChessKnight, GiChessPawn, GiChessQueen, GiChessRook } from "react-icons/gi";
 import { Figure } from "../../../interfaces";
 import './index.scss';
+import React from "react";
 
 export default function ChessFigure(props: {
     figureName: Figure | null,

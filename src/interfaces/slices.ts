@@ -9,5 +9,8 @@ export interface IMainSlice {
 };
 
 export interface IRootStore {
-    main: IMainSlice
+    rootReducer: { 
+        main: IMainSlice,
+        mainApi: any
+    }
 };

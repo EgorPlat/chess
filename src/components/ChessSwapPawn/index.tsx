@@ -1,3 +1,4 @@
+import React from "react";
 import ChessSwapPawnView from "./ChessSwapPawnView";
 
 export default function ChessSwapPawn({ 

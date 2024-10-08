@@ -1,3 +1,4 @@
+import React from 'react';
 import { IHistoryElement } from '../../../interfaces';
 import { DEFAULT_DESK } from '../../../store/constants';
 import './index.scss';
